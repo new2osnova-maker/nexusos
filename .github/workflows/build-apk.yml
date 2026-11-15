@@ -1,58 +1,42 @@
-name: Build NexusOS APK
+name: Build APK NexusOS
 
 on:
   push:
-    branches: [main]
-    tags: ['v*']
+    branches: [ "main" ]
   workflow_dispatch:
-
-permissions:
-  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 20
-
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
+          node-version: 18
 
       - name: Install dependencies
         run: npm install
 
       - name: Add Android platform
-        run: npx cap add android
+        run: npx cap add android || true
 
-      - name: Patch Android project
-        run: bash patch/patch-android.sh
-
-      - name: Sync web assets
-        run: npx cap sync android
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: Build debug APK
-        working-directory: android
         run: |
+          cd android
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
-
-      - name: Rename APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk NexusOS.apk
+          ./gradlew assembleDebug
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: NexusOS
-          path: NexusOS.apk
-
-      - name: Attach APK to release (tags v*)
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: NexusOS.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
