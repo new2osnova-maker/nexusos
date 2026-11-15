@@ -1,10 +1,10 @@
 name: Build NexusOS APK
 
 on:
-  push:
-    branches: [main]
-    tags: ['v*']
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -17,11 +17,9 @@ jobs:
 
       - name: Check project files
         run: |
-          ls -la
-          for f in package.json capacitor.config.json www/index.html patch/patch-android.sh patch/MainActivity.java; do
-            if [ -f "$f" ]; then echo "OK  $f"; else echo "::error::Missing file in repository: $f"; exit 1; fi
+          for f in package.json capacitor.config.json www/index.html; do
+            if [ -f "$f" ]; then echo "OK: $f"; else echo "::error::Missing file in repository: $f"; exit 1; fi
           done
-          sed -i 's/\r$//'
 
       - uses: actions/setup-node@v4
         with:
