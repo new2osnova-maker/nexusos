@@ -21,7 +21,7 @@ jobs:
           for f in package.json capacitor.config.json www/index.html patch/patch-android.sh patch/MainActivity.java; do
             if [ -f "$f" ]; then echo "OK  $f"; else echo "::error::Missing file in repository: $f"; exit 1; fi
           done
-          sed -i 's/\r$//' #patch/patch-android.sh
+          sed -i 's/\r$//'
 
       - uses: actions/setup-node@v4
         with:
@@ -37,9 +37,6 @@ jobs:
 
       - name: Add Android platform
         run: npx cap add android
-
-      - name: Patch Android project
-        run: bash patch/patch-android.sh
 
       - name: Sync web assets
         run: npx cap sync android
