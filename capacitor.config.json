@@ -1,0 +1,9 @@
+{
+  "appId": "team.nexus.os",
+  "appName": "NexusOS",
+  "webDir": "www",
+  "backgroundColor": "#000000",
+  "android": {
+    "allowMixedContent": true
+  }
+}
